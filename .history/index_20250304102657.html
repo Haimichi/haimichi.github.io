@@ -12,21 +12,8 @@
         <div class="cv-container">
             <div class="left-column">
                 <div class="profile-image">
-                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
-                    <img src="avatar.jpg" alt="Profile Picture" onclick="document.getElementById('imageInput').click()" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; cursor: pointer;">
+                    <img src="avatar.jpg" alt="Profile Picture">
                 </div>
-                <script>
-                    document.getElementById('imageInput').addEventListener('change', function(event) {
-                        const file = event.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                document.querySelector('.profile-image img').src = e.target.result;
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                </script>
                 <div class="contact-info">
                     <h2>Thông tin liên hệ</h2>
                     <p><i class="fas fa-phone"></i> 0123456789</p>
@@ -38,13 +25,13 @@
                     <div class="skill-item">
                         <span>HTML/CSS</span>
                         <div class="skill-level">
-                            <div class="skill-bar" style="width: 70%"></div>
+                            <div class="skill-bar" style="width: 90%"></div>
                         </div>
                     </div>
                     <div class="skill-item">
                         <span>JavaScript</span>
                         <div class="skill-level">
-                            <div class="skill-bar" style="width: 55%"></div>
+                            <div class="skill-bar" style="width: 85%"></div>
                         </div>
                     </div>
                 </div>
@@ -64,7 +51,6 @@
                     <h2>Học vấn</h2>
                     <p><strong>2021 - Hiện tại</strong></p>
                     <p>Đại học HUTECH</p>
-                    <p>GPA : 3.39</p>
                     <p>Chuyên ngành: Công nghệ thông tin</p>
                 </div>
                 <div class="section">
