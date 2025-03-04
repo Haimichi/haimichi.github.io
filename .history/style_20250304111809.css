@@ -419,13 +419,12 @@ h1.editable, h2.editable {
 
 .heart {
     position: absolute;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     background: transparent;
     transform: rotate(45deg);
     opacity: 0;  /* Start invisible */
     bottom: -50px;  /* Start below screen */
-    transition: transform 0.3s ease-out;
 }
 
 .heart::before,

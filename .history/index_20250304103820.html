@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV - Nguyễn Huỳnh Thanh Hải</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="theme-controls">
+        <button id="themeToggle" class="theme-btn">
+            <i class="fas fa-moon"></i>
+        </button>
+        <select id="languageSelect" class="lang-select">
+            <option value="vi">Tiếng Việt</option>
+            <option value="en">English</option>
+        </select>
+    </div>
+    <div class="container">
+        <div class="cv-container">
+            <div class="left-column">
+                <div class="profile-image">
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    <img src="avatar.jpg" alt="Profile Picture" onclick="document.getElementById('imageInput').click()" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; cursor: pointer;">
+                </div>
+                <script>
+                    document.getElementById('imageInput').addEventListener('change', function(event) {
+                        const file = event.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                document.querySelector('.profile-image img').src = e.target.result;
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                </script>
+                <div class="contact-info">
+                    <h2>Thông tin liên hệ</h2>
+                    <p><i class="fas fa-phone"></i> 0123456789</p>
+                    <p><i class="fas fa-envelope"></i> example@email.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> TP.HCM, Việt Nam</p>
+                </div>
+                <div class="skills">
+                    <h2>Kỹ năng</h2>
+                    <div class="skill-item">
+                        <span>HTML/CSS</span>
+                        <div class="skill-level">
+                            <div class="skill-bar" style="width: 70%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <span>JavaScript</span>
+                        <div class="skill-level">
+                            <div class="skill-bar" style="width: 55%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-column">
+                <div class="header">
+                    <h1>Nguyễn Huỳnh Thanh Hải</h1>
+                    <h2>Sinh viên năm 4</h2>
+                </div>
+                <div class="section">
+                    <h2>Thông tin cá nhân</h2>
+                    <p><strong>MSSV:</strong> 2180604560</p>
+                    <p><strong>Ngày sinh:</strong> 25-10-2002</p>
+                    <p><strong>Trường:</strong> Đại học HUTECH</p>
+                </div>
+                <div class="section">
+                    <h2>Học vấn</h2>
+                    <p><strong>2021 - Hiện tại</strong></p>
+                    <p>Đại học HUTECH</p>
+                    <p>GPA : 3.39</p>
+                    <p>Chuyên ngành: Công nghệ thông tin</p>
+                </div>
+                <div class="section">
+                    <h2>Mục tiêu nghề nghiệp</h2>
+                    <p>Phát triển bản thân trong lĩnh vực công nghệ thông tin, đặc biệt là lập trình web.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+const translations = {
+    en: {
+        title: "Contact Information",
+        skills: "Skills",
+        personalInfo: "Personal Information",
+        education: "Education",
+        career: "Career Objectives",
+        studentId: "Student ID",
+        dob: "Date of Birth",
+        university: "University",
+        major: "Major",
+        present: "Present"
+    },
+    vi: {
+        title: "Thông tin liên hệ",
+        skills: "Kỹ năng",
+        personalInfo: "Thông tin cá nhân",
+        education: "Học vấn",
+        career: "Mục tiêu nghề nghiệp",
+        studentId: "MSSV",
+        dob: "Ngày sinh",
+        university: "Trường",
+        major: "Chuyên ngành",
+        present: "Hiện tại"
+    }
+};
+
+// Theme Toggle
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-theme');
+    const icon = themeToggle.querySelector('i');
+    if (document.body.classList.contains('dark-theme')) {
+        icon.classList.replace('fa-moon', 'fa-sun');
+    } else {
+        icon.classList.replace('fa-sun', 'fa-moon');
+    }
+});
+
+// Language Toggle
+const languageSelect = document.getElementById('languageSelect');
+languageSelect.addEventListener('change', (e) => {
+    const lang = e.target.value;
+    updateLanguage(lang);
+});
+
+function updateLanguage(lang) {
+    document.querySelector('.contact-info h2').textContent = translations[lang].title;
+    document.querySelector('.skills h2').textContent = translations[lang].skills;
+    document.querySelector('.section h2').textContent = translations[lang].personalInfo;
+    // Update other elements...
+}
+</script>
+</html>

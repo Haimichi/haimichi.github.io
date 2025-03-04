@@ -253,26 +253,7 @@ let heartCount = 0;
 const maxHearts = 200; // Tăng số lượng tim tối đa
 const visibleHearts = []; // Mảng lưu trữ các trái tim
 
-// Thêm biến để theo dõi vị trí trái tim
-const heartPositions = new Set();
-const HEART_SIZE = 40; // Kích thước cơ bản của trái tim
-const COLUMNS = 20; // Số cột để phân chia màn hình
-
-function getAvailablePosition() {
-    const viewportWidth = window.innerWidth;
-    const columnWidth = viewportWidth / COLUMNS;
-    
-    // Tìm cột trống
-    for (let i = 0; i < COLUMNS; i++) {
-        const position = i * columnWidth;
-        if (!heartPositions.has(Math.floor(position / columnWidth))) {
-            heartPositions.add(Math.floor(position / columnWidth));
-            return position;
-        }
-    }
-    return null;
-}
-
+// Cập nhật hàm createHeart
 function createHeart() {
     if (heartCount >= maxHearts) {
         clearInterval(heartInterval);
@@ -280,17 +261,17 @@ function createHeart() {
         return;
     }
 
-    const position = getAvailablePosition();
-    if (position === null) return; // Không còn vị trí trống
-
     const heart = document.createElement('div');
     heart.className = 'heart';
     
-    // Set position
-    heart.style.left = `${position}px`;
+    // Random position horizontal only
+    heart.style.left = Math.random() * 100 + 'vw';
+    
+    // Set start position at bottom of screen
+    heart.style.bottom = '-50px';
     
     // Larger size và random size
-    const size = Math.random() * 10 + HEART_SIZE; // 40-50px
+    const size = Math.random() * 20 + 25;
     heart.style.width = size + 'px';
     heart.style.height = size + 'px';
     
@@ -302,19 +283,13 @@ function createHeart() {
     const color = colors[Math.floor(Math.random() * colors.length)];
     heart.style.background = color;
     
-    // Fast animation with column tracking
+    // Fast animation
     const duration = Math.random() * 1 + 2; // 2-3 seconds
     heart.style.animation = `floatUp ${duration}s linear forwards`;
     
     document.querySelector('.hearts-container').appendChild(heart);
     visibleHearts.push(heart);
     heartCount++;
-
-    // Xóa vị trí khỏi set khi trái tim đạt đến đỉnh
-    setTimeout(() => {
-        const column = Math.floor(position / (window.innerWidth / COLUMNS));
-        heartPositions.delete(column);
-    }, duration * 1000);
 }
 
 // Thêm hàm kiểm tra hearts filled

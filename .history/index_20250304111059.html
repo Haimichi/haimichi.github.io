@@ -253,44 +253,21 @@ let heartCount = 0;
 const maxHearts = 200; // Tăng số lượng tim tối đa
 const visibleHearts = []; // Mảng lưu trữ các trái tim
 
-// Thêm biến để theo dõi vị trí trái tim
-const heartPositions = new Set();
-const HEART_SIZE = 40; // Kích thước cơ bản của trái tim
-const COLUMNS = 20; // Số cột để phân chia màn hình
-
-function getAvailablePosition() {
-    const viewportWidth = window.innerWidth;
-    const columnWidth = viewportWidth / COLUMNS;
-    
-    // Tìm cột trống
-    for (let i = 0; i < COLUMNS; i++) {
-        const position = i * columnWidth;
-        if (!heartPositions.has(Math.floor(position / columnWidth))) {
-            heartPositions.add(Math.floor(position / columnWidth));
-            return position;
-        }
-    }
-    return null;
-}
-
 function createHeart() {
     if (heartCount >= maxHearts) {
         clearInterval(heartInterval);
-        checkHeartsFilled();
+        setTimeout(explodeHearts, 2000);
         return;
     }
-
-    const position = getAvailablePosition();
-    if (position === null) return; // Không còn vị trí trống
 
     const heart = document.createElement('div');
     heart.className = 'heart';
     
-    // Set position
-    heart.style.left = `${position}px`;
+    // Random position
+    heart.style.left = Math.random() * 100 + 'vw';
     
     // Larger size và random size
-    const size = Math.random() * 10 + HEART_SIZE; // 40-50px
+    const size = Math.random() * 20 + 25; // 25-45px
     heart.style.width = size + 'px';
     heart.style.height = size + 'px';
     
@@ -302,74 +279,20 @@ function createHeart() {
     const color = colors[Math.floor(Math.random() * colors.length)];
     heart.style.background = color;
     
-    // Fast animation with column tracking
-    const duration = Math.random() * 1 + 2; // 2-3 seconds
-    heart.style.animation = `floatUp ${duration}s linear forwards`;
+    // Position calculation
+    const startY = window.innerHeight + size; // Start below viewport
+    const endY = -size; // End above viewport
+    const distance = startY + Math.abs(endY);
+    const duration = (distance / 100) * (Math.random() * 2 + 3); // Adjust speed based on distance
+    
+    heart.style.setProperty('--start-y', `${startY}px`);
+    heart.style.setProperty('--end-y', `${endY}px`);
+    heart.style.setProperty('--duration', `${duration}s`);
     
     document.querySelector('.hearts-container').appendChild(heart);
     visibleHearts.push(heart);
     heartCount++;
-
-    // Xóa vị trí khỏi set khi trái tim đạt đến đỉnh
-    setTimeout(() => {
-        const column = Math.floor(position / (window.innerWidth / COLUMNS));
-        heartPositions.delete(column);
-    }, duration * 1000);
 }
-
-// Thêm hàm kiểm tra hearts filled
-function checkHeartsFilled() {
-    const viewportHeight = window.innerHeight;
-    const heartsContainer = document.querySelector('.hearts-container');
-    const hearts = heartsContainer.getElementsByClassName('heart');
-    let filledHeight = 0;
-
-    for (let heart of hearts) {
-        const rect = heart.getBoundingClientRect();
-        filledHeight = Math.max(filledHeight, viewportHeight - rect.top);
-    }
-
-    if (filledHeight >= viewportHeight * 0.8) { // 80% màn hình đã được lấp đầy
-        setTimeout(explodeHearts, 500);
-    }
-}
-
-// Thêm hiệu ứng tim mini cho nút restart
-function createMiniHeart(button) {
-    const heart = document.createElement('div');
-    heart.className = 'mini-heart';
-    
-    // Random position around button
-    const tx = (Math.random() - 0.5) * 100;
-    const ty = (Math.random() - 0.5) * 100;
-    heart.style.setProperty('--tx', `${tx}px`);
-    heart.style.setProperty('--ty', `${ty}px`);
-    
-    // Random color
-    const colors = ['#ff4081', '#e91e63', '#ff6b6b', '#ff3366'];
-    heart.style.background = colors[Math.floor(Math.random() * colors.length)];
-    
-    // Set starting position
-    heart.style.left = '50%';
-    heart.style.top = '50%';
-    
-    // Add animation
-    heart.style.animation = 'miniFloat 1s ease-out forwards';
-    
-    button.appendChild(heart);
-    
-    // Remove heart after animation
-    setTimeout(() => heart.remove(), 1000);
-}
-
-// Thêm event listener cho nút restart
-document.querySelector('.restart-btn').addEventListener('mouseover', function() {
-    const createHeartInterval = setInterval(() => createMiniHeart(this), 100);
-    this.addEventListener('mouseout', () => clearInterval(createHeartInterval), { once: true });
-});
-
-// Cập nhật interval tạo tim nhanh hơn
-let heartInterval = setInterval(createHeart, 100); // Tạo tim mỗi 100ms
 
 function explodeHearts() {
     // Dừng animation hiện tại của tất cả trái tim
@@ -397,6 +320,6 @@ function restartAnimation() {
 // Thêm animation explode mới
 
 // Start initial animation
-heartInterval = setInterval(createHeart, 200);
+let heartInterval = setInterval(createHeart, 200);
 </script>
 </html>

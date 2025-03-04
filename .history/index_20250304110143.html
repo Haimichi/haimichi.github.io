@@ -248,155 +248,77 @@ function makeEditable(element) {
     });
 }
 
-// Thay đổi các hàm liên quan đến trái tim
 let heartCount = 0;
-const maxHearts = 200; // Tăng số lượng tim tối đa
-const visibleHearts = []; // Mảng lưu trữ các trái tim
-
-// Thêm biến để theo dõi vị trí trái tim
-const heartPositions = new Set();
-const HEART_SIZE = 40; // Kích thước cơ bản của trái tim
-const COLUMNS = 20; // Số cột để phân chia màn hình
-
-function getAvailablePosition() {
-    const viewportWidth = window.innerWidth;
-    const columnWidth = viewportWidth / COLUMNS;
-    
-    // Tìm cột trống
-    for (let i = 0; i < COLUMNS; i++) {
-        const position = i * columnWidth;
-        if (!heartPositions.has(Math.floor(position / columnWidth))) {
-            heartPositions.add(Math.floor(position / columnWidth));
-            return position;
-        }
-    }
-    return null;
-}
+const maxHearts = 100; // Số tim tối đa trước khi nổ
 
 function createHeart() {
     if (heartCount >= maxHearts) {
-        clearInterval(heartInterval);
-        checkHeartsFilled();
+        explodeHearts();
         return;
     }
-
-    const position = getAvailablePosition();
-    if (position === null) return; // Không còn vị trí trống
 
     const heart = document.createElement('div');
     heart.className = 'heart';
     
-    // Set position
-    heart.style.left = `${position}px`;
+    // Random position
+    heart.style.left = Math.random() * 100 + 'vw';
     
-    // Larger size và random size
-    const size = Math.random() * 10 + HEART_SIZE; // 40-50px
+    // Larger size
+    const size = Math.random() * 30 + 20; // 20-50px
     heart.style.width = size + 'px';
     heart.style.height = size + 'px';
     
     // Vibrant colors
     const colors = [
-        '#ff0000', '#ff4081', '#e91e63', '#ff6b6b',
-        '#ff3366', '#ff0066', '#ff0033', '#ff3399'
+        '#ff4081', '#e91e63', '#ff6b6b', '#ff8a65',
+        '#ff4d4d', '#ff66a3', '#ff3399', '#ff99cc'
     ];
     const color = colors[Math.floor(Math.random() * colors.length)];
     heart.style.background = color;
     
-    // Fast animation with column tracking
-    const duration = Math.random() * 1 + 2; // 2-3 seconds
-    heart.style.animation = `floatUp ${duration}s linear forwards`;
+    // Add pseudo-elements with same color
+    heart.style.setProperty('--heart-color', color);
+    
+    // Random duration
+    const duration = Math.random() * 3 + 4; // 4-7 seconds
+    heart.style.setProperty('--duration', duration + 's');
     
     document.querySelector('.hearts-container').appendChild(heart);
-    visibleHearts.push(heart);
     heartCount++;
-
-    // Xóa vị trí khỏi set khi trái tim đạt đến đỉnh
+    
+    // Remove heart after animation
     setTimeout(() => {
-        const column = Math.floor(position / (window.innerWidth / COLUMNS));
-        heartPositions.delete(column);
+        heart.remove();
+        heartCount--;
     }, duration * 1000);
 }
 
-// Thêm hàm kiểm tra hearts filled
-function checkHeartsFilled() {
-    const viewportHeight = window.innerHeight;
-    const heartsContainer = document.querySelector('.hearts-container');
-    const hearts = heartsContainer.getElementsByClassName('heart');
-    let filledHeight = 0;
-
-    for (let heart of hearts) {
-        const rect = heart.getBoundingClientRect();
-        filledHeight = Math.max(filledHeight, viewportHeight - rect.top);
-    }
-
-    if (filledHeight >= viewportHeight * 0.8) { // 80% màn hình đã được lấp đầy
-        setTimeout(explodeHearts, 500);
-    }
-}
-
-// Thêm hiệu ứng tim mini cho nút restart
-function createMiniHeart(button) {
-    const heart = document.createElement('div');
-    heart.className = 'mini-heart';
-    
-    // Random position around button
-    const tx = (Math.random() - 0.5) * 100;
-    const ty = (Math.random() - 0.5) * 100;
-    heart.style.setProperty('--tx', `${tx}px`);
-    heart.style.setProperty('--ty', `${ty}px`);
-    
-    // Random color
-    const colors = ['#ff4081', '#e91e63', '#ff6b6b', '#ff3366'];
-    heart.style.background = colors[Math.floor(Math.random() * colors.length)];
-    
-    // Set starting position
-    heart.style.left = '50%';
-    heart.style.top = '50%';
-    
-    // Add animation
-    heart.style.animation = 'miniFloat 1s ease-out forwards';
-    
-    button.appendChild(heart);
-    
-    // Remove heart after animation
-    setTimeout(() => heart.remove(), 1000);
-}
-
-// Thêm event listener cho nút restart
-document.querySelector('.restart-btn').addEventListener('mouseover', function() {
-    const createHeartInterval = setInterval(() => createMiniHeart(this), 100);
-    this.addEventListener('mouseout', () => clearInterval(createHeartInterval), { once: true });
-});
-
-// Cập nhật interval tạo tim nhanh hơn
-let heartInterval = setInterval(createHeart, 100); // Tạo tim mỗi 100ms
-
 function explodeHearts() {
-    // Dừng animation hiện tại của tất cả trái tim
-    visibleHearts.forEach(heart => {
-        heart.style.animation = 'explode 1.5s forwards';
+    clearInterval(heartInterval);
+    
+    // Animate existing hearts to explode
+    const hearts = document.querySelectorAll('.heart');
+    hearts.forEach(heart => {
+        heart.style.animation = 'explode 1s forwards';
     });
     
-    // Show ending screen sau khi hiệu ứng nổ hoàn thành
+    // Show ending screen after explosion
     setTimeout(() => {
         document.querySelector('.ending-screen').classList.add('show');
-    }, 1500);
+    }, 1000);
 }
 
 function restartAnimation() {
-    // Xóa tất cả tim cũ
+    // Reset counter and clear existing hearts
     heartCount = 0;
-    visibleHearts.length = 0;
     document.querySelector('.hearts-container').innerHTML = '';
     document.querySelector('.ending-screen').classList.remove('show');
     
     // Restart heart creation
-    heartInterval = setInterval(createHeart, 100); // Tạo tim nhanh hơn
+    heartInterval = setInterval(createHeart, 200);
 }
 
-// Thêm animation explode mới
-
 // Start initial animation
-heartInterval = setInterval(createHeart, 200);
+let heartInterval = setInterval(createHeart, 200);
 </script>
 </html>
